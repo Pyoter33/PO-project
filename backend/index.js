@@ -7,7 +7,9 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// user account update
+// TODO: REANAME ENDPOINTS | CLEAN CODE | ADD RESPONSE STATUSES | SPLIT INTO SEPERATE FILES
+
+// ?USER ACCOUNT UPDATE
 app.get("/users/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -49,7 +51,7 @@ app.patch('/users/:id', async (req, res) => {
   }
 });
 
-// create own section
+// !CREATE OWN SECTION
 app.get("/sections", async (req, res) => {
   try {
     const allSections = await pool.query("SELECT * FROM odcinek");
@@ -70,21 +72,64 @@ app.get("/points", async (req, res) => {
   }
 });
 
-// consider the request for acceptance of the trip
+// TODO: ADD POST NEW SELECTION (blad ze odcinek juz istnieje)
+
+
+// !CONSIDER THE REQUEST FOR ACCEPTANCE OF THE TRIP
+
 app.get("/requests/accept_trip", async (req, res) => {
   try {
-    const allAcceptTrupRequests = await pool.query("SELECT * FROM wniosekoakceptacje");
-    res.json(allAcceptTrupRequests.rows);
+    const allAcceptTripRequests = await pool.query("SELECT * FROM wniosekoakceptacje");
+
+    const resArr = [];
+
+    await Promise.all(allAcceptTripRequests.rows.map(async request => {
+      const userRequest = await pool.query("SELECT * FROM wniosekuzytkownika WHERE id = $1", [request.wniosekuzytkownikaid]);
+      const userTrip = pool.query("SELECT * FROM wycieczka WHERE id = $1", [request.wycieczkaid]);
+      
+      const user = pool.query("SELECT * FROM uzytkownik WHERE id = $1", [userRequest.rows[0].uzytkownikskladajacyid]);
+
+      await Promise.all([userTrip, user]).then(function([resultA, resultB]) {
+        const points = resultA.rows[0].liczbapunktow;
+        const name = resultB.rows[0].imie;
+        const surname = resultB.rows[0].nazwisko;
+        resArr.push({request_id: request.wniosekuzytkownikaid, name, surname, points});
+      });
+    }));
+
+    res.json(resArr);
   } catch (err) {
     console.error(err.message);
-    res.status(400).send(err.message);
+    res.status(400).json({error: err.message});
   }
 });
 
+// TODO: data_zlozenia_wniosku (from wniosekuzytkownika)
+// TODO: skladajacy (from user, przez wniosekuzytkownika)
+// TODO: liczba punktów, czas rozpoczecia wycieczki, czas zakonczenia wycieczki (from wycieczka)
+// TODO: czas trwania wycieczki (obliczony)
+// TODO: zdjecie (from wniosekoakceptacje)
 app.get("/requests/accept_trip/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const allAcceptTrupRequests = await pool.query("SELECT * FROM wniosekoakceptacje WHERE wniosekuzytkownikaid = $1", [id]);
+    const allAcceptTripRequests = await pool.query("SELECT * FROM wniosekoakceptacje WHERE wniosekuzytkownikaid = $1", [id]);
+
+    const resArr = [];
+
+    await Promise.all(allAcceptTripRequests.rows.map(async request => {
+      const userRequest = await pool.query("SELECT * FROM wniosekuzytkownika WHERE id = $1", [request.wniosekuzytkownikaid]);
+      const userTrip = pool.query("SELECT * FROM wycieczka WHERE id = $1", [request.wycieczkaid]);
+      
+      const user = pool.query("SELECT * FROM uzytkownik WHERE id = $1", [userRequest.rows[0].uzytkownikskladajacyid]);
+
+      await Promise.all([userTrip, user]).then(function([resultA, resultB]) {
+        const points = resultA.rows[0].liczbapunktow;
+        const name = resultB.rows[0].imie;
+        const surname = resultB.rows[0].nazwisko;
+        resArr.push({request_id: request.wniosekuzytkownikaid, name, surname, points});
+      });
+    }));
+
     res.json(allAcceptTrupRequests.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -92,7 +137,22 @@ app.get("/requests/accept_trip/:id", async (req, res) => {
   }
 });
 
-// consider selection status update request
+
+// TODO: PATCH WNIOSKU O AKTEPTACJE WYCIECZKI
+//* JEZELI przodownik rozpatrzy OK
+//*    to DELETE wniosek o akceptacje
+//*       UPDATE wnioski uzytkownika (komentarz = NULL, datarozpatrzenia = DATE, statuswnioski = ZAAKCEPTOWANY)
+//*       UPDATE wycieczka (na Zaakceptowana)
+//* ELSE (Jezeli rozpatrzy NEGATYWNIE)
+//*   to DELETE wniosek o aktualizacje
+//*      UPDATE wnioski uzytkownika (komentarz = STRING, datarozpatrzenia = DATE, statuswniosku = ODRZUCONY)
+//*       UPDATE wycieczka (na Odrzucona)
+
+// !CONSIDER SELECTION STATUS UPDATE REQUEST
+
+// TODO: skladajacy (from user, przez wniosekuzytkownika)
+// TODO: stary status (from odcinek -> stanodcinka)
+// TODO: nowy status (from wniosekoaktualizacje -> stanodcinka)
 app.get("/requests/update_selection_status", async (req, res) => {
   try {
     const allAcceptTrupRequests = await pool.query("SELECT * FROM wniosekoaktualizacje");
@@ -104,6 +164,13 @@ app.get("/requests/update_selection_status", async (req, res) => {
 });
 
 
+// TODO: data_zlozenia_wniosku (from wniosekuzytkownika)
+// TODO: skladajacy (from user, przez wniosekuzytkownika)
+// TODO: stary status (from odcinek -> stanodcinka)
+// TODO: nowy status (from wniosekoaktualizacje -> stanodcinka)
+// TODO: czas rozpoczecia zamkniecia (from stanodcinka)
+// TODO: czas zakonczenia zamkniecia (from stanodcinka)
+// TODO: opis / powod (from stanodcinka)
 app.get("/requests/update_selection_status/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -116,13 +183,13 @@ app.get("/requests/update_selection_status/:id", async (req, res) => {
 });
 
 
-// JEZELI admin rozpatrzy OK
-//    to DELETE wniosek o aktualizacje
-//       UPDATE wnioski uzytkownika (komentarz = NULL, datarozpatrzenia = DATE)
-//       UPDATE odcinek (o stan odcinka z tabeli stanodcinka)
-// ELSE (Jezeli rozpatrzy NEGATYWNIE)
-//   to DELETE wniosek o aktualizacje
-//      UPDATE wnioski uzytkownika (komentarz = STRING, datarozpatrzenia = DATE)
+//* JEZELI admin rozpatrzy OK
+//*    to DELETE wniosek o aktualizacje
+//*       UPDATE wnioski uzytkownika (komentarz = NULL, datarozpatrzenia = DATE)
+//*       UPDATE odcinek (o stan odcinka z tabeli stanodcinka)
+//* ELSE (Jezeli rozpatrzy NEGATYWNIE)
+//*   to DELETE wniosek o aktualizacje
+//*      UPDATE wnioski uzytkownika (komentarz = STRING, datarozpatrzenia = DATE)
 
 app.patch('/requests/update_selection_status/accept/:id', async (req, res) => {
   const wniosekuzytkownikaid = req.params.id;
