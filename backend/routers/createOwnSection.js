@@ -1,61 +1,77 @@
 const express = require('express');
 const pool = require("../db");
+const areArraysEquals = require('../utils/utils');
 const router = new express.Router();
 
+//* GET /sections
 router.get("/sections", async (req, res) => {
     try {
-        const allSections = await pool.query("SELECT * FROM odcinek");
-        res.json(allSections.rows);
+        const sections = await pool.query("SELECT * FROM odcinek");
+        res.status(200).json(sections.rows);
     } catch (err) {
         console.error(err.message);
-        res.status(400).send(err.message);
+        res.status(400).json(err.message);
     }
 });
 
+//* GET /points
 router.get("/points", async (req, res) => {
     try {
-        const allPoints = await pool.query("SELECT * FROM punkt");
-        res.json(allPoints.rows);
+        const points = await pool.query("SELECT * FROM punkt");
+        res.status(200).json(points.rows);
     } catch (err) {
         console.error(err.message);
-        res.status(400).send(err.message);
+        res.status(400).json(err.message);
     }
 });
 
+//* POST /sections
+//* {
+//*     "userId": "1",
+//*     "length": "1.2",
+//*     "deflection": "2.3",
+//*     "points": "10",
+//*     "startPoint": "2",
+//*     "endPoint": "1"
+//* }
 router.post("/sections", async (req, res) => {
     const updates = Object.keys(req.body);
-    const allowedUpdates = ['uzytkownikid', 'dlugosc', 'przewyzszenie', 'punkty', 'punktpoczatkowyid', 'punktkoncowyid'];
-    const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
+    const allowedUpdates = ['userId', 'length', 'deflection', 'points', 'startPoint', 'endPoint'];
 
-    if (!isValidOperation) {
-        return res.status(400).send({ error: 'Invalid updates!' });
+    if (!areArraysEquals(updates, allowedUpdates)) {
+        return res.status(400).json({ error: 'Invalid updates!' });
     }
 
-    const { uzytkownikid, dlugosc, przewyzszenie, punkty, punktpoczatkowyid, punktkoncowyid } = req.body;
+    const { userId, length, deflection, points, startPoint, endPoint } = req.body;
 
     try {
         const allSections = await pool.query("SELECT * FROM odcinek");
-        const userStartPoint = await pool.query("SELECT * FROM punkt WHERE id = $1", [punktpoczatkowyid]);
-        const userEndPoint = await pool.query("SELECT * FROM punkt WHERE id = $1", [punktkoncowyid]);
+        const userStartPoint = await pool.query(`SELECT * FROM punkt WHERE id = ${startPoint}`);
+        const userEndPoint = await pool.query(`SELECT * FROM punkt WHERE id = ${endPoint}`);
 
         const startPointRange = userStartPoint.rows[0].pasmonazwa;
         const endPointRange = userEndPoint.rows[0].pasmonazwa;
 
         const arePointsInSameRange = startPointRange === endPointRange;
         if (!arePointsInSameRange) {
-        throw Error("Selected points do not lie in the same mountain range!");
+            return res.status(400).json({ error: 'Selected points do not lie in the same mountain range!' });
         }
 
-        const isSectionExists = allSections.rows.some(section => section.punktpoczatkowyid == punktpoczatkowyid && section.punktkoncowyid == punktkoncowyid);
+        const isSectionExists = allSections.rows.some(section => section.punktpoczatkowyid == startPoint && section.punktkoncowyid == endPoint);
         if (isSectionExists) {
-        throw Error("Section with the given start and end point already exists!");
+            return res.status(400).json({ error: 'Section with the given start and end point already exists!' });
         }
 
-        const newSectionsStatus = await pool.query("INSERT INTO stanodcinka (statusodcinkastatus, datarozpoczeciastanu, opis, datazakonczeniastanu) VALUES ($1, $2, $3, $4) RETURNING *", ["Otwarty", new Date(), `Stworzony przez użytkownika o id: ${uzytkownikid}`, null]);
-        const { id } = newSectionsStatus.rows[0];
-        const newSection = await pool.query("INSERT INTO odcinek (uzytkownikid, dlugosc, przewyzszenie, punkty, stanodcinkaid, punktpoczatkowyid, punktkoncowyid) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *", [uzytkownikid, dlugosc, przewyzszenie, punkty, id, punktpoczatkowyid, punktkoncowyid]);
+        const newSectionStatus = await pool.query(
+            `INSERT INTO stanodcinka (statusodcinkastatus, datarozpoczeciastanu, opis, datazakonczeniastanu) VALUES ('Otwarty', $1, '${`Stworzony przez użytkownika o id: ${userId}`}', ${null}) RETURNING *`,
+            [new Date()]
+        );
+        const { id } = newSectionStatus.rows[0];
+        const newSection = await pool.query(
+            `INSERT INTO odcinek (uzytkownikid, dlugosc, przewyzszenie, punkty, stanodcinkaid, punktpoczatkowyid, punktkoncowyid) VALUES (${userId}, ${length}, ${deflection}, ${points}, ${id}, ${startPoint}, ${endPoint}) RETURNING *`, 
+        );
         
-        res.status(200).json({createdSection: newSection.rows[0], createdSectionStatus: newSectionsStatus.rows[0]});
+        res.status(200).json({createdSection: newSection.rows[0], createdSectionStatus: newSectionStatus.rows[0]});
     } catch (err) {
         console.error(err.message);
         res.status(400).json({error: err.message});
