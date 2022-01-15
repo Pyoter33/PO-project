@@ -3,7 +3,6 @@ const pool = require('../db');
 const areArraysEquals = require('../utils/utils');
 const router = new express.Router();
 
-//* GET /users/:id
 router.get("/users/:id", async (req, res) => {
     const { id } = req.params;
     try {

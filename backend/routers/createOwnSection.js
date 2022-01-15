@@ -3,7 +3,6 @@ const pool = require("../db");
 const areArraysEquals = require('../utils/utils');
 const router = new express.Router();
 
-//* GET /sections
 router.get("/sections", async (req, res) => {
     try {
         const sections = await pool.query("SELECT * FROM odcinek");
@@ -14,7 +13,6 @@ router.get("/sections", async (req, res) => {
     }
 });
 
-//* GET /points
 router.get("/points", async (req, res) => {
     try {
         const points = await pool.query("SELECT * FROM punkt");
