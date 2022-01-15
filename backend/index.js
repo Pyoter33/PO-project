@@ -204,8 +204,20 @@ app.get("/requests/update_selection_status", async (req, res) => {
 app.get("/requests/update_selection_status/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const allAcceptTrupRequests = await pool.query("SELECT * FROM wniosekoaktualizacje WHERE wniosekuzytkownikaid = $1", [id]);
-    res.json(allAcceptTrupRequests.rows[0]);
+    const updateRequests = await pool.query("SELECT * FROM wniosekoaktualizacje WHERE wniosekuzytkownikaid = $1", [id]);
+
+    const userRequest = await pool.query("SELECT * FROM wniosekuzytkownika WHERE id = $1", [updateRequests.rows[0].wniosekuzytkownikaid]);
+    const user = await pool.query("SELECT * FROM uzytkownik WHERE id = $1", [userRequest.rows[0].uzytkownikskladajacyid]);
+    const newStatusPool = await pool.query("SELECT * FROM stanodcinka WHERE id = $1", [updateRequests.rows[0].stanodcinkaid]);
+    const selection = await pool.query("SELECT * FROM odcinek WHERE id = $1", [updateRequests.rows[0].odcinekid]);
+    const currentStatusPool = await pool.query("SELECT * FROM stanodcinka WHERE id = $1", [selection.rows[0].stanodcinkaid]);
+
+    res.json({
+      requestId: updateRequests.wniosekuzytkownikaid,
+      user: user.rows[0],
+      newStatus: newStatusPool.rows[0],
+      currentStatusPool: {selectionId: selection.rows[0].id, currentStatus: currentStatusPool.rows[0]}, 
+    });
   } catch (err) {
     console.error(err.message);
     res.status(400).send(err.message);
