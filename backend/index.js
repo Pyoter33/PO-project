@@ -93,7 +93,7 @@ app.get("/requests/accept_trip", async (req, res) => {
         const points = resultA.rows[0].liczbapunktow;
         const name = resultB.rows[0].imie;
         const surname = resultB.rows[0].nazwisko;
-        resArr.push({request_id: request.wniosekuzytkownikaid, name, surname, points});
+        resArr.push({requestId: request.wniosekuzytkownikaid, name, surname, points});
       });
     }));
 
@@ -104,11 +104,11 @@ app.get("/requests/accept_trip", async (req, res) => {
   }
 });
 
-// TODO: data_zlozenia_wniosku (from wniosekuzytkownika)
-// TODO: skladajacy (from user, przez wniosekuzytkownika)
-// TODO: liczba punktów, czas rozpoczecia wycieczki, czas zakonczenia wycieczki (from wycieczka)
-// TODO: czas trwania wycieczki (obliczony)
-// TODO: zdjecie (from wniosekoakceptacje)
+///// TODO: data_zlozenia_wniosku (from wniosekuzytkownika)
+///// TODO: skladajacy (from user, przez wniosekuzytkownika)
+///// TODO: liczba punktów, czas rozpoczecia wycieczki, czas zakonczenia wycieczki (from wycieczka)
+///// TODO: czas trwania wycieczki (obliczony)
+///// TODO: zdjecie (from wniosekoakceptacje)
 app.get("/requests/accept_trip/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -118,19 +118,33 @@ app.get("/requests/accept_trip/:id", async (req, res) => {
 
     await Promise.all(allAcceptTripRequests.rows.map(async request => {
       const userRequest = await pool.query("SELECT * FROM wniosekuzytkownika WHERE id = $1", [request.wniosekuzytkownikaid]);
+      const dateOfSubmission = userRequest.rows[0].datazlozenia;
       const userTrip = pool.query("SELECT * FROM wycieczka WHERE id = $1", [request.wycieczkaid]);
       
       const user = pool.query("SELECT * FROM uzytkownik WHERE id = $1", [userRequest.rows[0].uzytkownikskladajacyid]);
 
       await Promise.all([userTrip, user]).then(function([resultA, resultB]) {
         const points = resultA.rows[0].liczbapunktow;
+        const startDate = resultA.rows[0].datarozpoczecia;
+        const endDate = resultA.rows[0].datazakonczenia;
+        const timeTripInMinutes = (endDate - startDate) / 60 / 1000;
         const name = resultB.rows[0].imie;
         const surname = resultB.rows[0].nazwisko;
-        resArr.push({request_id: request.wniosekuzytkownikaid, name, surname, points});
+        resArr.push({
+          requestId: request.wniosekuzytkownikaid,
+          name, 
+          surname, 
+          points, 
+          dateOfSubmission,
+          startDate,
+          endDate,
+          timeTripInMinutes,
+          photo: request.zdjeciezrodlo,
+        });
       });
     }));
 
-    res.json(allAcceptTrupRequests.rows[0]);
+    res.json(resArr);
   } catch (err) {
     console.error(err.message);
     res.status(400).send(err.message);
