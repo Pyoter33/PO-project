@@ -1,5 +1,6 @@
 const express = require('express');
-const pool = require("../../db");
+const pool = require('../../db');
+const areArraysEquals = require('../../utils/utils');
 const router = new express.Router();
 
 
@@ -126,7 +127,7 @@ router.patch('/requests/update_selection_status/reject/:id', async (req, res) =>
     const updates = Object.keys(req.body);
     const allowedUpdates = ['komentarzzwrotny'];
     //const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
-    const isValidOperation = arrayEquals(allowedUpdates, updates);
+    const isValidOperation = areArraysEquals(allowedUpdates, updates);
 
     if (!isValidOperation) {
         return res.status(400).send({ error: 'Invalid updates!' });
@@ -171,13 +172,5 @@ router.patch('/requests/update_selection_status/reject/:id', async (req, res) =>
         res.status(400).json({error: err.message});
     }
 });
-
-
-const arrayEquals = (a, b) => {
-    return Array.isArray(a) &&
-        Array.isArray(b) &&
-        a.length === b.length &&
-        a.every((val, index) => val === b[index]);
-}
 
 module.exports = router;
