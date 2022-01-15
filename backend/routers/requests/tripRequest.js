@@ -95,7 +95,7 @@ router.patch('/requests/trip_acceptation/accept/:id', async (req, res) => {
     }
 });
 
-//* POST /requests/trip_acceptation/reject/:id
+//* PATCH /requests/trip_acceptation/reject/:id
 //* {
 //*     "comment":"komentarzyk marynarzyk 123 !@#@%@#*($"
 //* }
