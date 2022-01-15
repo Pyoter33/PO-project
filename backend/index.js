@@ -104,50 +104,43 @@ app.get("/requests/accept_trip", async (req, res) => {
   }
 });
 
-///// TODO: data_zlozenia_wniosku (from wniosekuzytkownika)
-///// TODO: skladajacy (from user, przez wniosekuzytkownika)
-///// TODO: liczba punktów, czas rozpoczecia wycieczki, czas zakonczenia wycieczki (from wycieczka)
-///// TODO: czas trwania wycieczki (obliczony)
-///// TODO: zdjecie (from wniosekoakceptacje)
 app.get("/requests/accept_trip/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const allAcceptTripRequests = await pool.query("SELECT * FROM wniosekoakceptacje WHERE wniosekuzytkownikaid = $1", [id]);
 
-    const resArr = [];
+    let response = {};
 
     await Promise.all(allAcceptTripRequests.rows.map(async request => {
       const userRequest = await pool.query("SELECT * FROM wniosekuzytkownika WHERE id = $1", [request.wniosekuzytkownikaid]);
-      const dateOfSubmission = userRequest.rows[0].datazlozenia;
-      const userTrip = pool.query("SELECT * FROM wycieczka WHERE id = $1", [request.wycieczkaid]);
+      const userTrip = await pool.query("SELECT * FROM wycieczka WHERE id = $1", [request.wycieczkaid]);
       
-      const user = pool.query("SELECT * FROM uzytkownik WHERE id = $1", [userRequest.rows[0].uzytkownikskladajacyid]);
-
-      await Promise.all([userTrip, user]).then(function([resultA, resultB]) {
-        const points = resultA.rows[0].liczbapunktow;
-        const startDate = resultA.rows[0].datarozpoczecia;
-        const endDate = resultA.rows[0].datazakonczenia;
-        const timeTripInMinutes = (endDate - startDate) / 60 / 1000;
-        const name = resultB.rows[0].imie;
-        const surname = resultB.rows[0].nazwisko;
-        resArr.push({
-          requestId: request.wniosekuzytkownikaid,
-          name, 
-          surname, 
-          points, 
-          dateOfSubmission,
-          startDate,
-          endDate,
-          timeTripInMinutes,
-          photo: request.zdjeciezrodlo,
-        });
-      });
+      const user = await pool.query("SELECT * FROM uzytkownik WHERE id = $1", [userRequest.rows[0].uzytkownikskladajacyid]);
+      
+      const dateOfSubmission = userRequest.rows[0].datazlozenia;
+      const points = userTrip.rows[0].liczbapunktow;
+      const startDate = userTrip.rows[0].datarozpoczecia;
+      const endDate = userTrip.rows[0].datazakonczenia;
+      const timeTripInMinutes = (endDate - startDate) / 60 / 1000;
+      const name = user.rows[0].imie;
+      const surname = user.rows[0].nazwisko;
+      response = {
+        requestId: request.wniosekuzytkownikaid,
+        name, 
+        surname, 
+        points, 
+        dateOfSubmission,
+        startDate,
+        endDate,
+        timeTripInMinutes,
+        photo: request.zdjeciezrodlo,
+      };
     }));
 
-    res.json(resArr);
+    res.json(response);
   } catch (err) {
     console.error(err.message);
-    res.status(400).send(err.message);
+    res.status(400).json({error: err.message});
   }
 });
 
@@ -163,17 +156,40 @@ app.get("/requests/accept_trip/:id", async (req, res) => {
 //*       UPDATE wycieczka (na Odrzucona)
 
 // !CONSIDER SELECTION STATUS UPDATE REQUEST
-
-// TODO: skladajacy (from user, przez wniosekuzytkownika)
-// TODO: stary status (from odcinek -> stanodcinka)
-// TODO: nowy status (from wniosekoaktualizacje -> stanodcinka)
 app.get("/requests/update_selection_status", async (req, res) => {
   try {
-    const allAcceptTrupRequests = await pool.query("SELECT * FROM wniosekoaktualizacje");
-    res.json(allAcceptTrupRequests.rows);
+    const allUpdateRequests = await pool.query("SELECT * FROM wniosekoaktualizacje");
+
+    const resArr = [];
+
+    await Promise.all(allUpdateRequests.rows.map(async request => {
+      const userRequest = await pool.query("SELECT * FROM wniosekuzytkownika WHERE id = $1", [request.wniosekuzytkownikaid]);
+      const user = pool.query("SELECT * FROM uzytkownik WHERE id = $1", [userRequest.rows[0].uzytkownikskladajacyid]);
+      const newStatusPool = pool.query("SELECT * FROM stanodcinka WHERE id = $1", [request.stanodcinkaid]);
+
+      const selection = await pool.query("SELECT * FROM odcinek WHERE id = $1", [request.odcinekid]);
+      const oldStatusPool = pool.query("SELECT * FROM stanodcinka WHERE id = $1", [selection.rows[0].stanodcinkaid]);
+
+
+      await Promise.all([user, newStatusPool, oldStatusPool]).then(function([userResult, newStatusPoolResult, oldStatusPoolResult]) {
+        const name = userResult.rows[0].imie;
+        const surname = userResult.rows[0].nazwisko;
+        const newStatus = newStatusPoolResult.rows[0].statusodcinkastatus;
+        const oldStatus = oldStatusPoolResult.rows[0].statusodcinkastatus;
+        resArr.push({
+          requestId: request.wniosekuzytkownikaid,
+          name,
+          surname,
+          newStatus,
+          oldStatus,
+        });
+      });
+    }));
+
+    res.json(resArr);
   } catch (err) {
     console.error(err.message);
-    res.status(400).send(err.message);
+    res.status(400).json({error: err.message});
   }
 });
 
