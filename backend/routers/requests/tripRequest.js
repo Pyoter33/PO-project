@@ -45,8 +45,9 @@ router.get("/requests/trip_acceptation/:id", async (req, res) => {
         const timeTripInMinutes = (endDate - startDate) / 60 / 1000;
         const name = user.rows[0].imie;
         const surname = user.rows[0].nazwisko;
+
         res.status(200).json({
-            requestId: request.wniosekuzytkownikaid,
+            requestId: request.rows[0].wniosekuzytkownikaid,
             name, 
             surname, 
             points, 
@@ -54,7 +55,7 @@ router.get("/requests/trip_acceptation/:id", async (req, res) => {
             startDate,
             endDate,
             timeTripInMinutes,
-            photo: request.zdjeciezrodlo,
+            photo: request.rows[0].zdjeciezrodlo,
         });
     } catch (err) {
         console.error(err.message);
