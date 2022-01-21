@@ -23,14 +23,16 @@ router.get("/users/:id", async (req, res) => {
 //*     "password": "haslo123"
 //* }
 router.patch('/users/:id', async (req, res) => {
+    const { id } = req.params;
+
     const updates = Object.keys(req.body);
+    console.log(`PATCHING USER id = ${id}`);
     const allowedUpdates = ['name', 'surname', 'login', 'password'];
 
     if (!areArraysEquals(updates, allowedUpdates)) {
         return res.status(400).json({ error: 'Invalid updates!' });
     }
 
-    const { id } = req.params;
     const { name, surname, login, password } = req.body;
 
     try {
