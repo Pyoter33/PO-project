@@ -1,0 +1,57 @@
+@import '../../global_variables.scss';
+
+.root {
+    padding-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.x {
+    width: 100%;
+}
+
+.divider {
+    background-color: $grey-color;
+    width: 20rem;
+    height: .1rem;
+    margin: 0 auto;
+}
+
+.dividerVertical {
+    background-color: $grey-color;
+    width: .1rem;
+    height: auto;
+    // margin: 0 auto;
+}
+
+.statCell {
+    max-width: 5rem;
+}
+
+// ===========
+.label,
+.value {
+    font-size: 1.5rem;
+}
+
+.label {
+    color: gray;
+    width: 15rem;
+    margin-left: 8rem;
+    
+}
+
+.iconButton {
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    margin-right: 1rem;
+}
+
+.tooltipWithButton {
+    position: absolute;
+    right: 0;
+}
