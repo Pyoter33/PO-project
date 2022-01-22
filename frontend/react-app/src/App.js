@@ -12,11 +12,8 @@ import './App.less';
 const { Content } = Layout;
 
 // TODO: add api folder and make services for axios
-// TODO: changed colors theme of antd
-// TODO: better table in Wnioski o aktualizacje
 // TODO: make more general components
 // TODO: reflect on styling of each component/page
-// TODO: add 'data wniosku' to table
 
 function App() {
   return (
