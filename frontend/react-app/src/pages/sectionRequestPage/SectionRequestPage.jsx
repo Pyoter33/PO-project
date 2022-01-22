@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import map from '../../assets/mapMockup.jpg';
-import styles from './SectionRequestPage.module.scss';
 import { LabeledText } from '../../components/labeledText/LabeledText';
 import { RejectCommentModal } from '../../components/rejectCommentModal/RejectCommentModal';
-import { transformDateWithTime } from '../../utils/utils';
+import { transformDate, transformDateWithTime } from '../../utils/utils';
 import { LoadingSpinner } from '../../components/loadingSpinner/LoadingSpinner';
 import { Divider } from './../../components/divider/Divider';
 import { Header } from '../../components/header/Header';
 import { DoubleTooltipIconButton } from '../../components/doubleTooltipIconButton/DoubleTooltipIconButton';
+import { getRequest, patchRequest } from './../../api/utils';
+import map from '../../assets/mapMockup.jpg';
+import styles from './SectionRequestPage.module.scss';
 
 export const SectionRequestPage = () => {
     const { id } = useParams();
@@ -22,9 +22,7 @@ export const SectionRequestPage = () => {
 
     useEffect(() => {
         setIsFetchingData(true);
-        axios.get(`http://localhost:5000/requests/section_status_update/${id}`)
-        .then(({data}) => {
-            console.log(data);
+        getRequest(`/requests/section_status_update/${id}`).then(data => {
             setRequest(data);
             setIsFetchingData(false);
         });
@@ -38,20 +36,17 @@ export const SectionRequestPage = () => {
         setIsModalShown(false);
     }
 
-    const handleOkModal = ({comment}) => {
-        axios.patch(`http://localhost:5000/requests/section_status_update/reject/${id}`, {
-            comment,
-        }).then(({data}) => {
-            console.log(data);
+    const handleOkModal = (comment) => {
+        patchRequest(`/requests/section_status_update/reject/${id}`, comment)
+        .then(() => {
             handleCloseModal();
             navigate(-1);
         });
     }
 
     const handleAccept = () => {
-        axios.patch(`http://localhost:5000/requests/section_status_update/accept/${id}`)
-        .then(({data}) => {
-            console.log(data);
+        patchRequest(`/requests/section_status_update/accept/${id}`)
+        .then(() => {
             navigate(-1);
         });
     }
@@ -101,7 +96,7 @@ export const SectionRequestPage = () => {
 
                         <LabeledText
                             labelText='Czas rozpoczęcia stanu:'
-                            text={transformDateWithTime(request.newStatus.datarozpoczeciastanu)}
+                            text={transformDate(request.newStatus.datarozpoczeciastanu)}
                         />
 
                         <LabeledText
@@ -109,7 +104,7 @@ export const SectionRequestPage = () => {
                             text={
                                 request.newStatus.datazakonczeniastanu 
                                 ?
-                                    transformDateWithTime(request.newStatus.datazakonczeniastanu)
+                                    transformDate(request.newStatus.datazakonczeniastanu)
                                 :
                                     <div className={styles.solidLine} />
                             }

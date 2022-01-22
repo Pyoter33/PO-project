@@ -5,7 +5,6 @@ export const Divider = ({orientation = 'vertical'}) => {
         return <div className={styles.dividerVertical} />;
     }
     else if (orientation === 'horizontal') {
-        console.log('dividerVertical');
         return <div className={styles.dividerHorizontal} />
     }
 

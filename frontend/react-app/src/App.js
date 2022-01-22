@@ -12,8 +12,6 @@ import './App.less';
 const { Content } = Layout;
 
 // TODO: add api folder and make services for axios
-// TODO: make more general components
-// TODO: reflect on styling of each component/page
 
 function App() {
   return (

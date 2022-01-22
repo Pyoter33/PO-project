@@ -1,9 +1,5 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { EditOutlined } from '@ant-design/icons';
-
-import styles from './AccountPage.module.scss';
-import avatar from '../../assets/avatar.png';
 import { UpdateAccountModal } from '../../components/updateAccountModal/UpdateAccountModal';
 import { transformDate } from '../../utils/utils';
 import { LoadingSpinner } from './../../components/loadingSpinner/LoadingSpinner';
@@ -11,6 +7,9 @@ import { LabeledText } from '../../components/labeledText/LabeledText';
 import { AccountStats } from '../../components/accountStats/AccountStats';
 import { Divider } from './../../components/divider/Divider';
 import { SingleTooltipIconButton } from '../../components/singleTooltipIconButton/SingleTooltipIconButton';
+import { getRequest, patchRequest } from './../../api/utils';
+import styles from './AccountPage.module.scss';
+import avatar from '../../assets/avatar.png';
 
 export const AccountPage = () => {
     const [userData, setUserData] = useState({});
@@ -20,8 +19,7 @@ export const AccountPage = () => {
     useEffect(() => {
         if (!isModalShown) {
             setIsFetchingData(true);
-            axios.get('http://localhost:5000/users/1')
-            .then(({data}) => {
+            getRequest('/users/1').then((data) => {
                 setUserData(data);
                 setIsFetchingData(false);
             });
@@ -37,13 +35,8 @@ export const AccountPage = () => {
         setIsModalShown(false);
     }
 
-    const handleOkModal = ({name, surname, login, password}) => {
-        axios.patch('http://localhost:5000/users/1', {
-            name,
-            surname,
-            login,
-            password,
-        })
+    const handleOkModal = (inputs) => {
+        patchRequest('/users/1', inputs)
         .then(() => {
             handleCloseModal();
         });
