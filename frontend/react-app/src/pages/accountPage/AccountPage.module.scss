@@ -5,6 +5,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    position: relative;
 }
 
 .x {
@@ -43,15 +44,11 @@
 }
 
 .iconButton {
-    display: flex;
-    align-items: center;
-}
-
-.icon {
-    margin-right: 1rem;
+    display: flex !important;
+    align-items: center !important;
 }
 
 .tooltipWithButton {
-    position: absolute;
-    right: 0;
+    position: fixed !important;
+    right: 1rem !important;
 }
