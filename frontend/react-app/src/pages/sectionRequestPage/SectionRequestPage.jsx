@@ -4,11 +4,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Tooltip, Button } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import map from '../../assets/mapMockup.jpg';
-import styles from './UpdateSectionRequestsPage.module.scss';
+import styles from './SectionRequestPage.module.scss';
 import { LabeledText } from '../../components/labeledText/LabeledText';
-import { RejectCommentModal } from './../../components/rejectCommentModal/RejectCommentModal';
+import { RejectCommentModal } from '../../components/rejectCommentModal/RejectCommentModal';
 
-export const UpdateSectionRequestsPage = () => {
+export const SectionRequestPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -106,7 +106,7 @@ export const UpdateSectionRequestsPage = () => {
 
                         <LabeledText
                             labelText='Aktualny stan odcinka:'
-                            text={request.currentStatus.currentStatus.statusodcinkastatus}
+                            text={request.currentStatus.status.statusodcinkastatus}
                         />
 
                         <LabeledText

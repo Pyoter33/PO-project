@@ -3,9 +3,9 @@ import axios from 'axios';
 import { Table, Tooltip, Button } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import styles from './UpdateSectionRequest.module.scss';
+import styles from './SectionRequestsTablePage.module.scss';
 
-export const UpdateSectionRequestPage = () => {
+export const SectionRequestsTablePage = () => {
     const [requests, setRequests] = useState({});
     const [isFetchingData, setIsFetchingData] = useState(true);
     const navigate = useNavigate();
@@ -32,7 +32,7 @@ export const UpdateSectionRequestPage = () => {
         title: 'Aktualny stan odcinka',
         dataIndex: 'oldStatus',
         key: 'oldStatus',
-        render: (text, record) => `${record.oldStatus.statusodcinkastatus}`,
+        render: (text, record) => `${record.currentStatus.statusodcinkastatus}`,
     },
     {
         title: 'Nowy stan odcinka',

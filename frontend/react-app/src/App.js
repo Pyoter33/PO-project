@@ -3,18 +3,16 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 import { HomePage } from './pages/homePage/HomePage';
 import { AccountPage } from './pages/accountPage/AccountPage';
-import { UpdateSectionRequestPage } from './pages/updateSectionRequestPage/UpdateSectionRequestPage';
-import { UpdateSectionRequestsPage } from './pages/updateSectionRequestsPage/UpdateSectionRequestsPage';
+import { SectionRequestsTablePage } from './pages/sectionRequestsTablePage/SectionRequestsTablePage';
+import { SectionRequestPage } from './pages/sectionRequestPage/SectionRequestPage';
 import { NavbarMenu } from './components/navbarMenu/NavbarMenu';
 import { SideBar } from './components/sideBar/SideBar';
 import './App.less';
 
 const { Content } = Layout;
 
-// TODO: fix API
 // TODO: add api folder and make services for axios
 // TODO: changed colors theme of antd
-// TODO: edit button in Profile
 // TODO: better table in Wnioski o aktualizacje
 // TODO: make more general components
 // TODO: reflect on styling of each component/page
@@ -33,8 +31,8 @@ function App() {
             <Routes>
               <Route path='/' element={<HomePage />} />
               <Route path='account' element={<AccountPage />} />
-              <Route path='requests/update-section' element={<UpdateSectionRequestPage />} />
-              <Route path='requests/update-section/:id' element={<UpdateSectionRequestsPage />} />
+              <Route path='requests/update-section' element={<SectionRequestsTablePage />} />
+              <Route path='requests/update-section/:id' element={<SectionRequestPage />} />
             </Routes>
           </Content>
 
