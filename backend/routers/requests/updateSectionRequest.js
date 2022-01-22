@@ -66,7 +66,7 @@ router.get("/requests/section_status_update/:id", async (req, res) => {
             dateOfSubmission: userRequest.rows[0].datazlozenia,
             requester: user.rows[0],
             newStatus: newStatusPool.rows[0],
-            currentStatus: {selectionId: selection.rows[0].id, currentStatus: currentStatusPool.rows[0]}, 
+            currentStatus: {selectionId: selection.rows[0].id, status: currentStatusPool.rows[0]}, 
         });
     } catch (err) {
         console.error(err.message);
