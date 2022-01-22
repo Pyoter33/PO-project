@@ -4,6 +4,7 @@ import { Table, Tooltip, Button, Empty } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import styles from './SectionRequestsTablePage.module.scss';
+import { transformDateWithTime } from '../../utils/utils';
 
 export const SectionRequestsTablePage = () => {
     const [requests, setRequests] = useState([]);
@@ -19,13 +20,6 @@ export const SectionRequestsTablePage = () => {
             setIsFetchingData(false);
         });
     }, []);
-
-    const transformDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return `${date.toLocaleDateString()} ${
-            date.getHours().toString().padStart(2, '0')}:${
-            date.getMinutes().toString().padStart(2, '0')}`;
-    };
       
     const columns = [
     {
@@ -40,7 +34,7 @@ export const SectionRequestsTablePage = () => {
         dataIndex: 'dateOfSubmission',
         key: 'dateOfSubmission',
         align: 'center',
-        render: (text) => transformDate(text),
+        render: (text) => transformDateWithTime(text),
     },
     {
         title: 'Aktualny stan odcinka',

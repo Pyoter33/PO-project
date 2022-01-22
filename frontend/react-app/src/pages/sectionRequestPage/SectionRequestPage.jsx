@@ -7,6 +7,8 @@ import map from '../../assets/mapMockup.jpg';
 import styles from './SectionRequestPage.module.scss';
 import { LabeledText } from '../../components/labeledText/LabeledText';
 import { RejectCommentModal } from '../../components/rejectCommentModal/RejectCommentModal';
+import { transformDateWithTime } from '../../utils/utils';
+import { LoadingSpinner } from '../../components/loadingSpinner/LoadingSpinner';
 
 export const SectionRequestPage = () => {
     const { id } = useParams();
@@ -25,13 +27,6 @@ export const SectionRequestPage = () => {
             setIsFetchingData(false);
         });
     }, [id]);
-
-    const transformDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return `${date.toLocaleDateString("pl-PL", {year: 'numeric', month: '2-digit', day: '2-digit'})} ${
-            date.getHours().toString().padStart(2, '0')}:${
-            date.getMinutes().toString().padStart(2, '0')}`;
-    };
 
     const handleShowModal = () => {
         setIsModalShown(true);
@@ -95,7 +90,7 @@ export const SectionRequestPage = () => {
                     <div className={styles.infoSide}>
                         <LabeledText
                             labelText='Data złożenia wniosku:'
-                            text={transformDate(request.dateOfSubmission)}
+                            text={transformDateWithTime(request.dateOfSubmission)}
                         />
 
                         <LabeledText
@@ -115,7 +110,7 @@ export const SectionRequestPage = () => {
 
                         <LabeledText
                             labelText='Czas rozpoczęcia stanu:'
-                            text={transformDate(request.newStatus.datarozpoczeciastanu)}
+                            text={transformDateWithTime(request.newStatus.datarozpoczeciastanu)}
                         />
 
                         <LabeledText
@@ -123,7 +118,7 @@ export const SectionRequestPage = () => {
                             text={
                                 request.newStatus.datazakonczeniastanu 
                                 ?
-                                    transformDate(request.newStatus.datazakonczeniastanu)
+                                    transformDateWithTime(request.newStatus.datazakonczeniastanu)
                                 :
                                     <div className={styles.divider} />
                             }
@@ -156,11 +151,7 @@ export const SectionRequestPage = () => {
     }
 
     else {
-        return (
-            <div className={styles.spinner}>
-                <Spin size="large" />
-            </div>
-        );
+        return <LoadingSpinner />;
     }
     
 };

@@ -6,6 +6,8 @@ import { EditOutlined } from '@ant-design/icons';
 import styles from './AccountPage.module.scss';
 import avatar from '../../assets/avatar.png';
 import { UpdateAccountModal } from '../../components/updateAccountModal/UpdateAccountModal';
+import { transformDate } from '../../utils/utils';
+import { LoadingSpinner } from './../../components/loadingSpinner/LoadingSpinner';
 
 export const AccountPage = () => {
     const [userData, setUserData] = useState({});
@@ -23,11 +25,6 @@ export const AccountPage = () => {
         }
         
     }, [isModalShown]);
-
-    const transformDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString();
-    };
 
     const handleShowModal = () => {
         setIsModalShown(true);
@@ -124,7 +121,7 @@ export const AccountPage = () => {
     }
 
     else {
-        return <h1>Loading...</h1>
+        return <LoadingSpinner />;
     }
     
 };
