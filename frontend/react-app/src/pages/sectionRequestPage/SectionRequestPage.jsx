@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Tooltip, Button } from 'antd';
+import { Tooltip, Button, Spin } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import map from '../../assets/mapMockup.jpg';
 import styles from './SectionRequestPage.module.scss';
@@ -28,7 +28,7 @@ export const SectionRequestPage = () => {
 
     const transformDate = (dateStr) => {
         const date = new Date(dateStr);
-        return `${date.toLocaleDateString()} ${
+        return `${date.toLocaleDateString("pl-PL", {year: 'numeric', month: '2-digit', day: '2-digit'})} ${
             date.getHours().toString().padStart(2, '0')}:${
             date.getMinutes().toString().padStart(2, '0')}`;
     };
@@ -55,7 +55,6 @@ export const SectionRequestPage = () => {
         axios.patch(`http://localhost:5000/requests/section_status_update/accept/${id}`)
         .then(({data}) => {
             console.log(data);
-            // handleCloseModal();
             navigate(-1);
         });
     }
@@ -157,7 +156,11 @@ export const SectionRequestPage = () => {
     }
 
     else {
-        return <h1>Loading...</h1>
+        return (
+            <div className={styles.spinner}>
+                <Spin size="large" />
+            </div>
+        );
     }
     
 };
