@@ -23,16 +23,21 @@ router.get("/requests/section_status_update", async (req, res) => {
                 const surname = userRespose.rows[0].nazwisko;
 
                 const newStatus = newStatusPoolResponse.rows[0];
-                const oldStatus = oldStatusPoolResponse.rows[0];
+                const currentStatus = oldStatusPoolResponse.rows[0];
+
+                const dateOfSubmission = userRequest.rows[0].datazlozenia;
                 responseArr.push({
                     requestId: request.wniosekuzytkownikaid,
                     name,
                     surname,
                     newStatus,
-                    oldStatus,
+                    currentStatus,
+                    dateOfSubmission
                 });
             });
         }));
+
+        responseArr.sort((a, b) => new Date(b.dateOfSubmission) - new Date(a.dateOfSubmission));
 
         res.status(200).json(responseArr);
     } catch (err) {
