@@ -5,6 +5,7 @@ import { EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import styles from './SectionRequestsTablePage.module.scss';
 import { transformDateWithTime } from '../../utils/utils';
+import { Header } from '../../components/header/Header';
 
 export const SectionRequestsTablePage = () => {
     const [requests, setRequests] = useState([]);
@@ -72,7 +73,7 @@ export const SectionRequestsTablePage = () => {
 
     return (
         <div className={styles.root}>
-            <h2 className={styles.header}>Wnioski przodowników o aktualizację stanu odcinka</h2>
+            <Header text='Wnioski przodowników o aktualizację stanu odcinka' />
                 <Table 
                     dataSource={requests} 
                     columns={columns} 

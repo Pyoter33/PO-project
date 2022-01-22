@@ -5,23 +5,6 @@
     padding: 1rem 0 0 2rem;
 }
 
-.buttons {
-    display: flex;
-    gap: 2rem;
-    position: fixed;
-    right: 2rem;
-    bottom: 2rem;
-}
-
-.iconButton {
-    display: flex !important;
-    align-items: center !important;
-}
-
-.header {
-    color: $mute-color;
-}
-
 .content {
     display: flex;
 }
@@ -35,21 +18,9 @@
     padding: 1rem 2rem 0 2rem;
 }
 
-.dividerVertical {
-    background-color: $grey-color;
-    width: .2rem;
-    height: auto;
-    border-radius: 1rem;
-}
-
-.label,
-.value {
-    font-size: 1.1rem;
-}
-
 .label {
+    font-size: 1.1rem;
     color: gray;
-    // width: 15rem;    
 }
 
 .textArea {
@@ -62,7 +33,7 @@
     width: 90%;
 }
 
-.divider {
+.solidLine {
     background-color: $grey-color;
     width: 8rem;
     height: .1rem;

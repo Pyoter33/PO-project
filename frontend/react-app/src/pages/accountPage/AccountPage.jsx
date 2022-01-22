@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Tooltip, Button } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 
 import styles from './AccountPage.module.scss';
@@ -8,6 +7,10 @@ import avatar from '../../assets/avatar.png';
 import { UpdateAccountModal } from '../../components/updateAccountModal/UpdateAccountModal';
 import { transformDate } from '../../utils/utils';
 import { LoadingSpinner } from './../../components/loadingSpinner/LoadingSpinner';
+import { LabeledText } from '../../components/labeledText/LabeledText';
+import { AccountStats } from '../../components/accountStats/AccountStats';
+import { Divider } from './../../components/divider/Divider';
+import { SingleTooltipIconButton } from '../../components/singleTooltipIconButton/SingleTooltipIconButton';
 
 export const AccountPage = () => {
     const [userData, setUserData] = useState({});
@@ -50,57 +53,44 @@ export const AccountPage = () => {
         return (
             <>
                 <div className={styles.root}>
-                    <Tooltip title="Edytuj profil" className={styles.tooltipWithButton}>
-                        <Button 
-                            type="primary" 
-                            icon={<EditOutlined />} 
-                            className={styles.iconButton} 
-                            onClick={() => handleShowModal()}
-                        >
-                            Edytuj
-                        </Button>
-                    </Tooltip>
+                    <SingleTooltipIconButton
+                        type='primary'
+                        text='Edytuj'
+                        tooltipTitle='Edytuj profil'
+                        icon={<EditOutlined />}
+                        onClick={() => handleShowModal()}
+                        right='1rem'
+                    />
     
                     <img src={avatar} alt='no_image' width={150}></img>
                     <h3 className='pt-3'>{userData.user.imie} {userData.user.nazwisko}</h3>
-                    <div className={styles.divider} />
-    
-                    <div className={`${styles.x} mt-3 d-flex justify-content-around text-center`}>
-                        <div className={styles.statCell}>
-                            <h3>{userData.totalTrips}</h3>
-                            <h6>Liczba wycieczek</h6>
-                        </div>
-    
-                        <div className={styles.dividerVertical} />
-    
-                        <div className={styles.statCell}>
-                            <h3>{userData.totalBadges}</h3>
-                            <h6>Liczba zdobytych odznak</h6>
-                        </div>
-    
-                        <div className={styles.dividerVertical} />
-    
-                        <div className={styles.statCell}>
-                            <h3>{userData.totalPoints}</h3>
-                            <h6>Liczba zdobytych punktów</h6>
-                        </div>
-                    </div>
+
+                    <Divider />
+
+                    <AccountStats
+                        totalBadges={userData.totalBadges}
+                        totalTrips={userData.totalTrips}
+                        totalPoints={userData.totalPoints}
+                    />
     
                     <div className='mt-5'>
-                        <div className='d-flex'>
-                            <p className={styles.label}>Rola: </p>
-                            <p className={styles.value}>{userData.user.rolanazwa}</p>
-                        </div>
-    
-                        <div className='d-flex'>
-                            <p className={styles.label}>Login: </p>
-                            <p className={styles.value}>{userData.user.login}</p>
-                        </div>
-    
-                        <div className='d-flex'>
-                            <p className={styles.label}>Data urodzenia: </p>
-                            <p className={styles.value}>{transformDate(userData.user.dataurodzenia)}</p>
-                        </div>
+                        <LabeledText 
+                            labelText='Rola:' 
+                            text={userData.user.rolanazwa}
+                            fontSize='1.5rem'
+                        />
+
+                        <LabeledText 
+                            labelText='Login:' 
+                            text={userData.user.login}
+                            fontSize='1.5rem'
+                        />
+
+                        <LabeledText 
+                            labelText='Data urodzenia:' 
+                            text={transformDate(userData.user.dataurodzenia)}
+                            fontSize='1.5rem'
+                        />
                     </div>
                 </div>
     

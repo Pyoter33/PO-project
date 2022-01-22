@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Tooltip, Button, Spin } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import map from '../../assets/mapMockup.jpg';
 import styles from './SectionRequestPage.module.scss';
@@ -9,6 +8,9 @@ import { LabeledText } from '../../components/labeledText/LabeledText';
 import { RejectCommentModal } from '../../components/rejectCommentModal/RejectCommentModal';
 import { transformDateWithTime } from '../../utils/utils';
 import { LoadingSpinner } from '../../components/loadingSpinner/LoadingSpinner';
+import { Divider } from './../../components/divider/Divider';
+import { Header } from '../../components/header/Header';
+import { DoubleTooltipIconButton } from '../../components/doubleTooltipIconButton/DoubleTooltipIconButton';
 
 export const SectionRequestPage = () => {
     const { id } = useParams();
@@ -57,34 +59,23 @@ export const SectionRequestPage = () => {
     if (!isFetchingData && request) {
         return (
             <div className={styles.root}>
-                <div className={styles.buttons}>
-                    <Tooltip title="Zaakceptuj wniosek" >
-                        <Button 
-                            type="primary" 
-                            icon={<CheckOutlined />} 
-                            className={styles.iconButton} 
-                            onClick={handleAccept}
-                        >
-                            Zaakceptuj
-                        </Button>
-                    </Tooltip>
+                <DoubleTooltipIconButton 
+                    firstText='Zaakceptuj'
+                    firstTooltipTitle='Zaakceptuj wniosek'
+                    firstIcon={<CheckOutlined />}
+                    secondIcon={<CloseOutlined />}
+                    onFirstClick={handleAccept}
+                    secondText='Odrzuć'
+                    secondTooltipTitle='Zaakceptuj wniosek'
+                    onSecondClick={handleShowModal}
+                    right='2rem'
+                    bottom='2rem'
+                    isSecondDanger
+                    firstType='primary'
+                    secondType='primary'
+                />
 
-                    <Tooltip title="Zaakceptuj wniosek">
-                        <Button 
-                            type="primary"
-                            danger 
-                            icon={<CloseOutlined />} 
-                            className={styles.iconButton} 
-                            onClick={handleShowModal}
-                        >
-                            Odrzuć
-                        </Button>
-                    </Tooltip>
-                </div>
-
-                <h2 className={styles.header}>
-                    Wniosek przodownika: {request.requester.imie} {request.requester.nazwisko}
-                </h2>
+                <Header text={`Wniosek przodownika: ${request.requester.imie} ${request.requester.nazwisko}`} />
 
                 <div className={styles.content}>
                     <div className={styles.infoSide}>
@@ -120,7 +111,7 @@ export const SectionRequestPage = () => {
                                 ?
                                     transformDateWithTime(request.newStatus.datazakonczeniastanu)
                                 :
-                                    <div className={styles.divider} />
+                                    <div className={styles.solidLine} />
                             }
                         />
 
@@ -130,7 +121,7 @@ export const SectionRequestPage = () => {
                         </div>
                     </div>
 
-                    <div className={styles.dividerVertical} />
+                    <Divider orientation='horizontal' />
                     
                     <div className={styles.photoSide}>
                         <p className='text-muted'>Odcinek na mapie:</p>

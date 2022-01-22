@@ -1,0 +1,14 @@
+@import '../../global_variables.scss';
+
+.dividerHorizontal {
+    background-color: $grey-color;
+    width: .1rem;
+    height: auto;
+}
+
+.dividerVertical {
+    background-color: $grey-color;
+    width: 20rem;
+    height: .1rem;
+    margin: 0 auto;
+}
