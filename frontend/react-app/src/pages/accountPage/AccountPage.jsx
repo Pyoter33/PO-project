@@ -10,15 +10,17 @@ import { UpdateAccountModal } from '../../components/updateAccountModal/UpdateAc
 export const AccountPage = () => {
     const [userData, setUserData] = useState({});
     const [isModalShown, setIsModalShown] = useState(false);
+    const [isFetchingData, setIsFetchingData] = useState(true);
 
     useEffect(() => {
-        console.log('DUPA');
+        setIsFetchingData(true);
         axios.get('http://localhost:5000/users/1')
         .then(({data}) => {
             console.log(data);
             setUserData(data);
+            setIsFetchingData(false);
         });
-    }, []);
+    }, [isModalShown]);
 
     const transformDate = (dateStr) => {
         const date = new Date(dateStr);
@@ -105,15 +107,18 @@ export const AccountPage = () => {
                 </div>
             </div>
 
-            <UpdateAccountModal 
-                visible={isModalShown} 
-                handleCancel={handleCloseModal}
-                handleOk={handleOkModal}
-                name={userData.imie}
-                surname={userData.nazwisko}
-                login={userData.login}
-                password={userData.haslo}
-            />
+            {
+                !isFetchingData && isModalShown &&
+                <UpdateAccountModal 
+                    visible={isModalShown} 
+                    handleCancel={handleCloseModal}
+                    handleOk={handleOkModal}
+                    name={userData.imie}
+                    surname={userData.nazwisko}
+                    login={userData.login}
+                    password={userData.haslo}
+                />
+            }
         </>
     );
 };

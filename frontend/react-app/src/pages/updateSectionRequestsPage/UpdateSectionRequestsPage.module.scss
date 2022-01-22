@@ -1,0 +1,70 @@
+@import '../../global_variables.scss';
+
+.root {
+    position: relative;
+    padding: 1rem 0 0 2rem;
+}
+
+.buttons {
+    display: flex;
+    gap: 2rem;
+    position: fixed;
+    right: 2rem;
+    bottom: 2rem;
+}
+
+.iconButton {
+    display: flex !important;
+    align-items: center !important;
+}
+
+.header {
+    color: $mute-color;
+}
+
+.content {
+    display: flex;
+}
+
+.infoSide {
+    width: 55%;
+    margin-top: 1rem;
+}
+
+.photoSide {
+    padding: 1rem 2rem 0 2rem;
+}
+
+.dividerVertical {
+    background-color: $grey-color;
+    width: .2rem;
+    height: auto;
+    border-radius: 1rem;
+}
+
+.label,
+.value {
+    font-size: 1.1rem;
+}
+
+.label {
+    color: gray;
+    // width: 15rem;    
+}
+
+.textArea {
+    border: .1rem solid $grey-color;
+    resize: none;
+    width: 90%;
+}
+
+.photo {
+    width: 90%;
+}
+
+.divider {
+    background-color: $grey-color;
+    width: 8rem;
+    height: .1rem;
+    margin: .9rem auto;
+}

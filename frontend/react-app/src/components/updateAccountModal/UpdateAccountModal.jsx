@@ -1,4 +1,4 @@
-import { Modal, Form, Input, Button } from 'antd';
+import { Modal, Form, Input } from 'antd';
 import { useModalForm } from 'sunflower-antd';
 
 export const UpdateAccountModal = ({
@@ -11,8 +11,6 @@ export const UpdateAccountModal = ({
     login,
     password,
 }) => {
-    console.log(name, surname, login, password);
-
     const [form] = Form.useForm();
     const {
         modalProps,

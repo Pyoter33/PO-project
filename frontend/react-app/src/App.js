@@ -4,6 +4,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import { HomePage } from './pages/homePage/HomePage';
 import { AccountPage } from './pages/accountPage/AccountPage';
 import { UpdateSectionRequestPage } from './pages/updateSectionRequestPage/UpdateSectionRequestPage';
+import { UpdateSectionRequestsPage } from './pages/updateSectionRequestsPage/UpdateSectionRequestsPage';
 import { NavbarMenu } from './components/navbarMenu/NavbarMenu';
 import { SideBar } from './components/sideBar/SideBar';
 import './App.less';
@@ -24,6 +25,7 @@ function App() {
               <Route path='/' element={<HomePage />} />
               <Route path='account' element={<AccountPage />} />
               <Route path='requests/update-section' element={<UpdateSectionRequestPage />} />
+              <Route path='requests/update-section/:id' element={<UpdateSectionRequestsPage />} />
             </Routes>
           </Content>
 
