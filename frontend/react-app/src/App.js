@@ -1,6 +1,6 @@
 import { Layout } from 'antd';
 import { Routes, Route, BrowserRouter } from "react-router-dom";
-
+import { Page404 } from './pages/Page404/Page404';
 import { HomePage } from './pages/homePage/HomePage';
 import { AccountPage } from './pages/accountPage/AccountPage';
 import { SectionRequestsTablePage } from './pages/sectionRequestsTablePage/SectionRequestsTablePage';
@@ -10,8 +10,6 @@ import { SideBar } from './components/sideBar/SideBar';
 import './App.less';
 
 const { Content } = Layout;
-
-// TODO: add api folder and make services for axios
 
 function App() {
   return (
@@ -28,6 +26,8 @@ function App() {
               <Route path='account' element={<AccountPage />} />
               <Route path='requests/update-section' element={<SectionRequestsTablePage />} />
               <Route path='requests/update-section/:id' element={<SectionRequestPage />} />
+              <Route path='requests/update-section/:id' element={<SectionRequestPage />} />
+              <Route path='*' element={<Page404 />} />
             </Routes>
           </Content>
 
