@@ -19,9 +19,12 @@ router.get("/requests/trip_acceptation", async (req, res) => {
                 const points = userTripResponse.rows[0].liczbapunktow;
                 const name = userResponse.rows[0].imie;
                 const surname = userResponse.rows[0].nazwisko;
-                responseArr.push({requestId: request.wniosekuzytkownikaid, name, surname, points});
+                const dateOfSubmission = userRequest.rows[0].datazlozenia;
+                responseArr.push({requestId: request.wniosekuzytkownikaid, name, surname, points, dateOfSubmission});
             });
         }));
+
+        responseArr.sort((a, b) => new Date(b.dateOfSubmission) - new Date(a.dateOfSubmission));
 
         res.status(200).json(responseArr);
     } catch (err) {
