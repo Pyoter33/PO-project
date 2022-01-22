@@ -7,7 +7,27 @@ router.get("/users/:id", async (req, res) => {
     const { id } = req.params;
     try {
         const user = await pool.query(`SELECT * FROM uzytkownik WHERE id = ${id}`);
-        res.status(200).json(user.rows[0]);
+        const GOTBookId = user.rows[0].ksiazeczkagotid;
+
+        const GOTBook = await pool.query(`SELECT * FROM ksiazeczkagot WHERE id = ${GOTBookId}`);
+        const totalPoints = GOTBook.rows[0].sumarycznepunkty;
+
+        const badges = await pool.query(`SELECT * FROM odznakauzytkownika WHERE ksiazeczkagotid = ${GOTBookId}`);
+        const totalBadges = badges.rowCount;
+
+        const trips = await pool.query(`SELECT * FROM wycieczka WHERE ksiazeczkagotid = ${GOTBookId}`);
+        const totalTrips = trips.rowCount;
+
+        const role = await pool.query(`SELECT * FROM rolauzytkownika WHERE id = ${user.rows[0].rolauzytkownikaid}`);
+        const userRole = role.rows[0].rola;
+        user.rows[0].rolanazwa = userRole;
+
+        res.status(200).json({
+            user: user.rows[0], 
+            totalPoints,
+            totalBadges,
+            totalTrips,
+        });
     } catch (err) {
         console.error(err.message);
         res.status(400).json({error: err.message});
