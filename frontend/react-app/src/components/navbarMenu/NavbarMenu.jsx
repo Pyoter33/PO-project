@@ -1,5 +1,7 @@
 import React from 'react';
 import { Navbar, Container } from 'react-bootstrap'; 
+import { Tooltip, Button } from 'antd';
+import { PoweroffOutlined } from '@ant-design/icons';
 import styles from './NavbarMenu.module.scss';
 
 export const NavbarMenu = () => {
@@ -9,7 +11,13 @@ export const NavbarMenu = () => {
                 <Navbar.Brand>GiT</Navbar.Brand>
                 <Navbar.Toggle />
                 <Navbar.Collapse className="justify-content-end">
-                    <p>Dupa</p>
+                    <Tooltip title="Wyloguj się">
+                        <Button 
+                            type="primary" 
+                            shape="circle" 
+                            icon={<PoweroffOutlined />} 
+                        />
+                    </Tooltip>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
