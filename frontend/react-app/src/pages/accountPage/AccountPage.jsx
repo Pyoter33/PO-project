@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { notification } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
 import { UpdateAccountModal } from '../../components/updateAccountModal/UpdateAccountModal';
 import { transformDate } from '../../utils/utils';
@@ -22,6 +23,11 @@ export const AccountPage = () => {
             getRequest('/users/1').then((data) => {
                 setUserData(data);
                 setIsFetchingData(false);
+            }).catch(error => {
+                notification.error({
+                    message: `Bład serwera (${error.message})`,
+                    placement: 'bottomRight',
+                });
             });
         }
         
@@ -39,6 +45,15 @@ export const AccountPage = () => {
         patchRequest('/users/1', inputs)
         .then(() => {
             handleCloseModal();
+            notification.success({
+                message: 'Pomyślnie zaktualizowano profil',
+                placement: 'bottomRight',
+            });
+        }).catch(error => {
+            notification.error({
+                message: `Bład serwera (${error.message})`,
+                placement: 'bottomRight',
+            });
         });
     }
 

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { notification } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { LabeledText } from '../../components/labeledText/LabeledText';
 import { RejectCommentModal } from '../../components/rejectCommentModal/RejectCommentModal';
@@ -25,6 +26,11 @@ export const SectionRequestPage = () => {
         getRequest(`/requests/section_status_update/${id}`).then(data => {
             setRequest(data);
             setIsFetchingData(false);
+        }).catch(error => {
+            notification.error({
+                message: `Bład serwera (${error.message})`,
+                placement: 'bottomRight',
+            });
         });
     }, [id]);
 
@@ -40,14 +46,34 @@ export const SectionRequestPage = () => {
         patchRequest(`/requests/section_status_update/reject/${id}`, comment)
         .then(() => {
             handleCloseModal();
+            notification.success({
+                message: 'Sukces!',
+                description: `Pomyślnie ODRZUCONO wniosek turysty: ${request.requester.imie} ${request.requester.nazwisko} `,
+                placement: 'bottomRight',
+            });
             navigate(-1);
+        }).catch(error => {
+            notification.error({
+                message: `Bład serwera (${error.message})`,
+                placement: 'bottomRight',
+            });
         });
     }
 
     const handleAccept = () => {
         patchRequest(`/requests/section_status_update/accept/${id}`)
         .then(() => {
+            notification.success({
+                message: 'Sukces!',
+                description: `Pomyślnie ZAAKCEPTOWANO wniosek turysty: ${request.requester.imie} ${request.requester.nazwisko} `,
+                placement: 'bottomRight',
+            })
             navigate(-1);
+        }).catch(error => {
+            notification.error({
+                message: `Bład serwera (${error.message})`,
+                placement: 'bottomRight',
+            });
         });
     }
 

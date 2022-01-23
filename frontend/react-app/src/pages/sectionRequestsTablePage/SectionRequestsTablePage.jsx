@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Table, Tooltip, Button, Empty } from 'antd';
+import { Table, Tooltip, Button, Empty, notification } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { transformDateWithTime } from '../../utils/utils';
@@ -17,6 +17,11 @@ export const SectionRequestsTablePage = () => {
         getRequest('/requests/section_status_update').then(data => {
             setRequests(data);
             setIsFetchingData(false);
+        }).catch(error => {
+            notification.error({
+                message: `Bład serwera (${error.message})`,
+                placement: 'bottomRight',
+            });
         });
     }, []);
       
@@ -53,16 +58,12 @@ export const SectionRequestsTablePage = () => {
             title: 'Akcje',
             key: 'actions',
             align: 'center',
-            render: (text, record) => (
+            render: () => (
                 <Tooltip title="Rozpatrz wniosek">
                     <Button 
                         type="primary" 
                         shape="circle" 
                         icon={<EyeOutlined />} 
-                        onClick={() =>{
-                            console.log(text, record);
-                            navigate(`${record.requestId}`);
-                        } }
                     />
                 </Tooltip>
             ),
