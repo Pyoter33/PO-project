@@ -19,8 +19,10 @@ export const SectionRequestsTablePage = () => {
             setIsFetchingData(false);
         }).catch(error => {
             notification.error({
-                message: `Bład serwera (${error.message})`,
+                message: `Bład!`,
+                description: `${error.message}`,
                 placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
             });
         });
     }, []);

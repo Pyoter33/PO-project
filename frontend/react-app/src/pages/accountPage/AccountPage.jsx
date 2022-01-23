@@ -25,8 +25,10 @@ export const AccountPage = () => {
                 setIsFetchingData(false);
             }).catch(error => {
                 notification.error({
-                    message: `Bład serwera (${error.message})`,
+                    message: `Bład!`,
+                    description: `${error.message}`,
                     placement: 'bottomRight',
+                    style: {backgroundColor: '#ffc4c4'},
                 });
             });
         }
@@ -46,13 +48,17 @@ export const AccountPage = () => {
         .then(() => {
             handleCloseModal();
             notification.success({
-                message: 'Pomyślnie zaktualizowano profil',
+                message: `Sukces!`,
+                description: 'Pomyślnie zaktualizowano profil!',
                 placement: 'bottomRight',
+                style: {backgroundColor: '#c2ffd2'},
             });
         }).catch(error => {
             notification.error({
-                message: `Bład serwera (${error.message})`,
+                message: `Bład!`,
+                description: `${error.message}`,
                 placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
             });
         });
     }

@@ -28,8 +28,10 @@ export const SectionRequestPage = () => {
             setIsFetchingData(false);
         }).catch(error => {
             notification.error({
-                message: `Bład serwera (${error.message})`,
+                message: `Bład!`,
+                description: `${error.message}`,
                 placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
             });
         });
     }, [id]);
@@ -50,12 +52,15 @@ export const SectionRequestPage = () => {
                 message: 'Sukces!',
                 description: `Pomyślnie ODRZUCONO wniosek turysty: ${request.requester.imie} ${request.requester.nazwisko} `,
                 placement: 'bottomRight',
+                style: {backgroundColor: '#c2ffd2'},
             });
             navigate(-1);
         }).catch(error => {
             notification.error({
-                message: `Bład serwera (${error.message})`,
+                message: `Bład!`,
+                description: `${error.message}`,
                 placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
             });
         });
     }
@@ -67,12 +72,15 @@ export const SectionRequestPage = () => {
                 message: 'Sukces!',
                 description: `Pomyślnie ZAAKCEPTOWANO wniosek turysty: ${request.requester.imie} ${request.requester.nazwisko} `,
                 placement: 'bottomRight',
+                style: {backgroundColor: '#c2ffd2'},
             })
             navigate(-1);
         }).catch(error => {
             notification.error({
-                message: `Bład serwera (${error.message})`,
+                message: `Bład!`,
+                description: `${error.message}`,
                 placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
             });
         });
     }
