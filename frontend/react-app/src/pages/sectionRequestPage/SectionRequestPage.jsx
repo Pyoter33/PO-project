@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Tooltip, Button } from 'antd';
+import { notification } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import map from '../../assets/mapMockup.jpg';
-import styles from './UpdateSectionRequestsPage.module.scss';
 import { LabeledText } from '../../components/labeledText/LabeledText';
-import { RejectCommentModal } from './../../components/rejectCommentModal/RejectCommentModal';
+import { RejectCommentModal } from '../../components/rejectCommentModal/RejectCommentModal';
+import { transformDate } from '../../utils/utils';
+import { LoadingSpinner } from '../../components/loadingSpinner/LoadingSpinner';
+import { Divider } from './../../components/divider/Divider';
+import { Header } from '../../components/header/Header';
+import { DoubleTooltipIconButton } from '../../components/doubleTooltipIconButton/DoubleTooltipIconButton';
+import { getRequest, patchRequest } from './../../api/utils';
+import map from '../../assets/mapMockup.jpg';
+import styles from './SectionRequestPage.module.scss';
 
-export const UpdateSectionRequestsPage = () => {
+export const SectionRequestPage = () => {
     const { id } = useParams();
     const navigate = useNavigate();
 
@@ -18,20 +23,18 @@ export const UpdateSectionRequestsPage = () => {
 
     useEffect(() => {
         setIsFetchingData(true);
-        axios.get(`http://localhost:5000/requests/section_status_update/${id}`)
-        .then(({data}) => {
-            console.log(data);
+        getRequest(`/requests/section_status_update/${id}`).then(data => {
             setRequest(data);
             setIsFetchingData(false);
+        }).catch(error => {
+            notification.error({
+                message: `Bład!`,
+                description: `${error.message}`,
+                placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
+            });
         });
     }, [id]);
-
-    const transformDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return `${date.toLocaleDateString()} ${
-            date.getHours().toString().padStart(2, '0')}:${
-            date.getMinutes().toString().padStart(2, '0')}`;
-    };
 
     const handleShowModal = () => {
         setIsModalShown(true);
@@ -41,56 +44,67 @@ export const UpdateSectionRequestsPage = () => {
         setIsModalShown(false);
     }
 
-    const handleOkModal = ({comment}) => {
-        axios.patch(`http://localhost:5000/requests/section_status_update/reject/${id}`, {
-            comment,
-        }).then(({data}) => {
-            console.log(data);
+    const handleOkModal = (comment) => {
+        patchRequest(`/requests/section_status_update/reject/${id}`, comment)
+        .then(() => {
             handleCloseModal();
+            notification.success({
+                message: 'Sukces!',
+                description: `Pomyślnie ODRZUCONO wniosek turysty: ${request.requester.imie} ${request.requester.nazwisko} `,
+                placement: 'bottomRight',
+                style: {backgroundColor: '#c2ffd2'},
+            });
             navigate(-1);
+        }).catch(error => {
+            notification.error({
+                message: `Bład!`,
+                description: `${error.message}`,
+                placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
+            });
         });
     }
 
     const handleAccept = () => {
-        axios.patch(`http://localhost:5000/requests/section_status_update/accept/${id}`)
-        .then(({data}) => {
-            console.log(data);
-            // handleCloseModal();
+        patchRequest(`/requests/section_status_update/accept/${id}`)
+        .then(() => {
+            notification.success({
+                message: 'Sukces!',
+                description: `Pomyślnie ZAAKCEPTOWANO wniosek turysty: ${request.requester.imie} ${request.requester.nazwisko} `,
+                placement: 'bottomRight',
+                style: {backgroundColor: '#c2ffd2'},
+            })
             navigate(-1);
+        }).catch(error => {
+            notification.error({
+                message: `Bład!`,
+                description: `${error.message}`,
+                placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
+            });
         });
     }
 
     if (!isFetchingData && request) {
         return (
             <div className={styles.root}>
-                <div className={styles.buttons}>
-                    <Tooltip title="Zaakceptuj wniosek" >
-                        <Button 
-                            type="primary" 
-                            icon={<CheckOutlined />} 
-                            className={styles.iconButton} 
-                            onClick={handleAccept}
-                        >
-                            Zaakceptuj
-                        </Button>
-                    </Tooltip>
+                <DoubleTooltipIconButton 
+                    firstText='Zaakceptuj'
+                    firstTooltipTitle='Zaakceptuj wniosek'
+                    firstIcon={<CheckOutlined />}
+                    secondIcon={<CloseOutlined />}
+                    onFirstClick={handleAccept}
+                    secondText='Odrzuć'
+                    secondTooltipTitle='Zaakceptuj wniosek'
+                    onSecondClick={handleShowModal}
+                    right='2rem'
+                    bottom='2rem'
+                    isSecondDanger
+                    firstType='primary'
+                    secondType='primary'
+                />
 
-                    <Tooltip title="Zaakceptuj wniosek">
-                        <Button 
-                            type="primary"
-                            danger 
-                            icon={<CloseOutlined />} 
-                            className={styles.iconButton} 
-                            onClick={handleShowModal}
-                        >
-                            Odrzuć
-                        </Button>
-                    </Tooltip>
-                </div>
-
-                <h2 className={styles.header}>
-                    Wniosek przodownika: {request.requester.imie} {request.requester.nazwisko}
-                </h2>
+                <Header text={`Wniosek przodownika: ${request.requester.imie} ${request.requester.nazwisko}`} />
 
                 <div className={styles.content}>
                     <div className={styles.infoSide}>
@@ -106,7 +120,7 @@ export const UpdateSectionRequestsPage = () => {
 
                         <LabeledText
                             labelText='Aktualny stan odcinka:'
-                            text={request.currentStatus.currentStatus.statusodcinkastatus}
+                            text={request.currentStatus.status.statusodcinkastatus}
                         />
 
                         <LabeledText
@@ -126,7 +140,7 @@ export const UpdateSectionRequestsPage = () => {
                                 ?
                                     transformDate(request.newStatus.datazakonczeniastanu)
                                 :
-                                    <div className={styles.divider} />
+                                    <div className={styles.solidLine} />
                             }
                         />
 
@@ -136,7 +150,7 @@ export const UpdateSectionRequestsPage = () => {
                         </div>
                     </div>
 
-                    <div className={styles.dividerVertical} />
+                    <Divider orientation='horizontal' />
                     
                     <div className={styles.photoSide}>
                         <p className='text-muted'>Odcinek na mapie:</p>
@@ -157,7 +171,7 @@ export const UpdateSectionRequestsPage = () => {
     }
 
     else {
-        return <h1>Loading...</h1>
+        return <LoadingSpinner />;
     }
     
 };

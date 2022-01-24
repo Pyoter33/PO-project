@@ -1,11 +1,16 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { Tooltip, Button } from 'antd';
+import { notification } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
-
+import { UpdateAccountModal } from '../../components/updateAccountModal/UpdateAccountModal';
+import { transformDate } from '../../utils/utils';
+import { LoadingSpinner } from './../../components/loadingSpinner/LoadingSpinner';
+import { LabeledText } from '../../components/labeledText/LabeledText';
+import { AccountStats } from '../../components/accountStats/AccountStats';
+import { Divider } from './../../components/divider/Divider';
+import { SingleTooltipIconButton } from '../../components/singleTooltipIconButton/SingleTooltipIconButton';
+import { getRequest, patchRequest } from './../../api/utils';
 import styles from './AccountPage.module.scss';
 import avatar from '../../assets/avatar.png';
-import { UpdateAccountModal } from '../../components/updateAccountModal/UpdateAccountModal';
 
 export const AccountPage = () => {
     const [userData, setUserData] = useState({});
@@ -13,19 +18,22 @@ export const AccountPage = () => {
     const [isFetchingData, setIsFetchingData] = useState(true);
 
     useEffect(() => {
-        setIsFetchingData(true);
-        axios.get('http://localhost:5000/users/1')
-        .then(({data}) => {
-            console.log(data);
-            setUserData(data);
-            setIsFetchingData(false);
-        });
+        if (!isModalShown) {
+            setIsFetchingData(true);
+            getRequest('/users/1').then((data) => {
+                setUserData(data);
+                setIsFetchingData(false);
+            }).catch(error => {
+                notification.error({
+                    message: `Bład!`,
+                    description: `${error.message}`,
+                    placement: 'bottomRight',
+                    style: {backgroundColor: '#ffc4c4'},
+                });
+            });
+        }
+        
     }, [isModalShown]);
-
-    const transformDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString();
-    };
 
     const handleShowModal = () => {
         setIsModalShown(true);
@@ -35,90 +43,89 @@ export const AccountPage = () => {
         setIsModalShown(false);
     }
 
-    const handleOkModal = ({name, surname, login, password}) => {
-        axios.patch('http://localhost:5000/users/1', {
-            name: name,
-            surname: surname,
-            login: login,
-            password: password,
-        })
-        .then(({data}) => {
-            console.log(data);
-            setUserData(data);
+    const handleOkModal = (inputs) => {
+        patchRequest('/users/1', inputs)
+        .then(() => {
+            handleCloseModal();
+            notification.success({
+                message: `Sukces!`,
+                description: 'Pomyślnie zaktualizowano profil!',
+                placement: 'bottomRight',
+                style: {backgroundColor: '#c2ffd2'},
+            });
+        }).catch(error => {
+            notification.error({
+                message: `Bład!`,
+                description: `${error.message}`,
+                placement: 'bottomRight',
+                style: {backgroundColor: '#ffc4c4'},
+            });
         });
-
-        handleCloseModal();
     }
 
-    return (
-        <>
-            <div className={styles.root}>
-                <Tooltip title="Edytuj profil" className={styles.tooltipWithButton}>
-                    <Button 
-                        type="primary" 
-                        icon={<EditOutlined />} 
-                        className={styles.iconButton} 
+    if (!isFetchingData && userData) {
+        return (
+            <>
+                <div className={styles.root}>
+                    <SingleTooltipIconButton
+                        type='primary'
+                        text='Edytuj'
+                        tooltipTitle='Edytuj profil'
+                        icon={<EditOutlined />}
                         onClick={() => handleShowModal()}
-                    >
-                        Edytuj
-                    </Button>
-                </Tooltip>
+                        right='1rem'
+                    />
+    
+                    <img src={avatar} alt='no_image' width={150}></img>
+                    <h3 className='pt-3'>{userData.user.imie} {userData.user.nazwisko}</h3>
 
-                <img src={avatar} alt='no_image' width={150}></img>
-                <h3 className='pt-3'>{userData.imie} {userData.nazwisko}</h3>
-                <div className={styles.divider} />
+                    <Divider />
 
-                <div className={`${styles.x} mt-3 d-flex justify-content-around text-center`}>
-                    <div className={styles.statCell}>
-                        <h3>10</h3>
-                        <h6>Liczba wycieczek</h6>
-                    </div>
+                    <AccountStats
+                        totalBadges={userData.totalBadges}
+                        totalTrips={userData.totalTrips}
+                        totalPoints={userData.totalPoints}
+                    />
+    
+                    <div className='mt-5'>
+                        <LabeledText 
+                            labelText='Rola:' 
+                            text={userData.user.rolanazwa}
+                            fontSize='1.5rem'
+                        />
 
-                    <div className={styles.dividerVertical} />
+                        <LabeledText 
+                            labelText='Login:' 
+                            text={userData.user.login}
+                            fontSize='1.5rem'
+                        />
 
-                    <div className={styles.statCell}>
-                        <h3>30</h3>
-                        <h6>Liczba zdobytych odznak</h6>
-                    </div>
-
-                    <div className={styles.dividerVertical} />
-
-                    <div className={styles.statCell}>
-                        <h3>200</h3>
-                        <h6>Liczba zdobytych punktów</h6>
-                    </div>
-                </div>
-
-                <div className='mt-5'>
-                    <div className='d-flex'>
-                        <p className={styles.label}>Rola: </p>
-                        <p className={styles.value}>{userData.rolauzytkownikaid}</p>
-                    </div>
-
-                    <div className='d-flex'>
-                        <p className={styles.label}>Login: </p>
-                        <p className={styles.value}>{userData.login}</p>
-                    </div>
-
-                    <div className='d-flex'>
-                        <p className={styles.label}>Data urodzenia: </p>
-                        <p className={styles.value}>{transformDate(userData.dataurodzenia)}</p>
+                        <LabeledText 
+                            labelText='Data urodzenia:' 
+                            text={transformDate(userData.user.dataurodzenia)}
+                            fontSize='1.5rem'
+                        />
                     </div>
                 </div>
-            </div>
+    
+                {
+                    !isFetchingData && isModalShown &&
+                    <UpdateAccountModal 
+                        visible={isModalShown} 
+                        handleCancel={handleCloseModal}
+                        handleOk={handleOkModal}
+                        name={userData.user.imie}
+                        surname={userData.user.nazwisko}
+                        login={userData.user.login}
+                        password={userData.user.haslo}
+                    />
+                }
+            </>
+        );
+    }
 
-            {
-                !isFetchingData && isModalShown &&
-                <UpdateAccountModal 
-                    visible={isModalShown} 
-                    handleCancel={handleCloseModal}
-                    handleOk={handleOkModal}
-                    name={userData.imie}
-                    surname={userData.nazwisko}
-                    login={userData.login}
-                    password={userData.haslo}
-                />
-            }
-        </>
-    );
+    else {
+        return <LoadingSpinner />;
+    }
+    
 };
