@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, Tooltip, Button, Empty, notification } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { transformDateWithTime } from '../../utils/utils';
+import { transformDate } from '../../utils/utils';
 import { Header } from '../../components/header/Header';
 import { getRequest } from './../../api/utils';
 import styles from './SectionRequestsTablePage.module.scss';
@@ -40,7 +40,7 @@ export const SectionRequestsTablePage = () => {
             dataIndex: 'dateOfSubmission',
             key: 'dateOfSubmission',
             align: 'center',
-            render: (text) => transformDateWithTime(text),
+            render: (text) => transformDate(text),
         },
         {
             title: 'Aktualny stan odcinka',

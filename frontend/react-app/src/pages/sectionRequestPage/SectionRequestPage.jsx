@@ -4,7 +4,7 @@ import { notification } from 'antd';
 import { CheckOutlined, CloseOutlined } from '@ant-design/icons';
 import { LabeledText } from '../../components/labeledText/LabeledText';
 import { RejectCommentModal } from '../../components/rejectCommentModal/RejectCommentModal';
-import { transformDate, transformDateWithTime } from '../../utils/utils';
+import { transformDate } from '../../utils/utils';
 import { LoadingSpinner } from '../../components/loadingSpinner/LoadingSpinner';
 import { Divider } from './../../components/divider/Divider';
 import { Header } from '../../components/header/Header';
@@ -110,7 +110,7 @@ export const SectionRequestPage = () => {
                     <div className={styles.infoSide}>
                         <LabeledText
                             labelText='Data złożenia wniosku:'
-                            text={transformDateWithTime(request.dateOfSubmission)}
+                            text={transformDate(request.dateOfSubmission)}
                         />
 
                         <LabeledText

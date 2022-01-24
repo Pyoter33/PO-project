@@ -33,6 +33,7 @@ export const UpdateAccountModal = ({
             confirmLoading={confirmLoading}
             onCancel={handleCancel}
             okText='Potwierdź'
+            cancelText='Anuluj'
         >
             <Form
                 labelCol={{ span: 8 }}
