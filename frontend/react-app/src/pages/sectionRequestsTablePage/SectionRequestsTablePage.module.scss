@@ -1,0 +1,13 @@
+@import '../../global_variables.scss';
+
+.root {
+    padding: 2rem 3rem;
+
+    table tr:nth-child(2n) td {
+        background-color: $grey-color;
+    }
+}
+
+.header {
+    color: $mute-color;
+}
