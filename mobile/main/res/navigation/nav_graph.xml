@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/stretchCreatorFragment">
+
+    <fragment
+        android:id="@+id/stretchCreatorFragment"
+        android:name="com.example.goryity.views.StretchCreatorFragment"
+        android:label="StretchCreator" >
+        <action
+            android:id="@+id/action_stretchCreatorFragment_to_pointsListFragment"
+            app:destination="@id/pointsListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/pointsListFragment"
+        android:name="com.example.goryity.views.PointsListFragment"
+        android:label="PointsListFragment" >
+        <argument
+            android:name="range"
+            app:argType="string"
+            app:nullable="true"
+            />
+        <argument
+            android:name="isFirst"
+            app:argType="boolean"
+            />
+
+    </fragment>
+    <fragment
+        android:id="@+id/applicationsListFragment"
+        android:name="com.example.goryity.views.ApplicationsListFragment"
+        android:label="ApplicationsListFragment" >
+        <action
+            android:id="@+id/action_applicationsListFragment_to_applicationDetailsFragment"
+            app:destination="@id/applicationDetailsFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/applicationDetailsFragment"
+        android:name="com.example.goryity.views.ApplicationDetailsFragment"
+        android:label="application_details_fragment"
+        tools:layout="@layout/application_details_fragment" >
+        <argument
+            android:name="applicationId"
+            app:argType="integer" />
+    </fragment>
+</navigation>
