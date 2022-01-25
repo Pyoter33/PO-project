@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group>
+        <item android:title="@string/applications_menu"
+           >
+            <menu>
+                <item
+                    android:id="@+id/nav_applications"
+                    android:title="@string/applications_trip_menu"
+                    android:icon="@drawable/ic_baseline_application_24" />
+            </menu>
+        </item>
+
+        <item android:title="@string/creator_menu"
+            >
+            <menu>
+                <item
+                    android:id="@+id/nav_stretch"
+                    android:title="@string/stretch_menu"
+                    android:icon="@drawable/ic_baseline_create_24"/>
+            </menu>
+        </item>
+    </group>
+</menu>
